@@ -7,6 +7,7 @@
 using namespace std;
 
 // Variable declarations
+int turn = 0; // keep track of the number of moves made
 int next_move = 2; // "X" = 2; "O" = 5;
 int next_player = 1; // -1 = human, 1 = AI, 0 = no move;
 int board[9] = {0,0,0,0,0,0,0,0,0};
@@ -29,6 +30,7 @@ int randomMove(int brd[], int player);
 int betterMove(int brd[], int player);
 int forkMove(int brd[], int player);
 void humanMove(int brd[], int player);
+int miniMax(int brd[], int player);
 
 int main () {
     while(game_running){
@@ -41,11 +43,13 @@ int main () {
 
         if (next_player == -1){
             humanMove(board, next_move);
+            turn = turn + 1;
         }
 
         else if (next_player == 1){
             node = betterMove(board,next_move);
             makeMove(node, board, next_move);
+            turn = turn + 1;
         }
 
         int score = gameScore(board, next_move);
@@ -279,4 +283,13 @@ void humanMove(int brd[], int player){
         cin>>box;
         done = makeMove(box, brd, player);
     }
+}
+
+int miniMax(int brd[], int player) {
+    int mv = -1;
+    if 
+    
+    
+    return mv;
+    
 }
