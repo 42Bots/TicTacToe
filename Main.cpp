@@ -1,5 +1,5 @@
-#include <iostream>
-#include <stdio.h>      /* printf, scanf, puts, NULL */
+#include <iostream>     /* cin, cout */
+#include <stdio.h>      /* printf */
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 #include <vector>       /* vector */
@@ -8,6 +8,7 @@ using namespace std;
 
 // Variable declarations
 int next_move = 2; // "X" = 2; "O" = 5;
+int next_player = 1; // -1 = human, 1 = AI, 0 = no move;
 int board[9] = {0,0,0,0,0,0,0,0,0};
 const int board_size = 3;
 bool game_running = true;
@@ -15,7 +16,7 @@ const int X = 2;
 const int O = 5;
 
 // Function declarations
-void makeMove(int node, int brd[], int player);
+bool makeMove(int node, int brd[], int player);
 int checkLine(int line, int brd[]);
 void showBoard(const int brd[]);
 char gridChar(int i);
@@ -27,19 +28,29 @@ int gameScore(int brd[], int player);
 int randomMove(int brd[], int player);
 int betterMove(int brd[], int player);
 int forkMove(int brd[], int player);
+void humanMove(int brd[], int player);
 
 int main () {
     while(game_running){
         drawBoard(board);
-        if (next_move==X) {cout<<"Next move: X - "<<next_move<<endl;}
-        else if (next_move == O){cout<<"Next move: O - "<<next_move<<endl;}
+
+        if (next_move==X) {cout<<"Next move: X"<<endl;}
+        else if (next_move == O){cout<<"Next move: O"<<endl;}
 
         int node = 0;
-        //cin>>node;
-        //node = randomMove(board,next_move);
-        node = betterMove(board,next_move);
-        makeMove(node, board, next_move);
+
+        if (next_player == -1){
+            humanMove(board, next_move);
+        }
+
+        else if (next_player == 1){
+            node = betterMove(board,next_move);
+            makeMove(node, board, next_move);
+        }
+
         int score = gameScore(board, next_move);
+        next_player = -next_player;
+
         if (score!=-1){
             game_running = false;
             drawBoard(board);
@@ -56,13 +67,18 @@ int lines[8][3] = {
     {0,4,8}, {2,4,6}          // diagonals
 };
 
-void makeMove(int node, int brd[], int player) {
+bool makeMove(int node, int brd[], int player) {
+    bool good_move = false;
+
     if (brd[node]==0){
         brd[node]=player;
+        good_move=true;
     }
     else {
         cout<<"Invallid move!"<<endl;
     }
+
+    return good_move;
 }
 
 int checkLine(int line, int brd[]) {
@@ -252,4 +268,15 @@ int forkMove(int brd[], int player){
         }
     }
     return fork_move;
+}
+
+void humanMove(int brd[], int player){
+    bool done = false;
+
+    while (done == false){
+        cout<<"Your turn! Select an empty square."<<endl;
+        int box;
+        cin>>box;
+        done = makeMove(box, brd, player);
+    }
 }
