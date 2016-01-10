@@ -7,7 +7,6 @@
 using namespace std;
 
 // Variable declarations
-int turn = 0; // keep track of the number of moves made
 int next_move = 2; // "X" = 2; "O" = 5;
 int next_player = 1; // -1 = human, 1 = AI, 0 = no move;
 int board[9] = {0,0,0,0,0,0,0,0,0};
@@ -30,7 +29,8 @@ int randomMove(int brd[], int player);
 int betterMove(int brd[], int player);
 int forkMove(int brd[], int player);
 void humanMove(int brd[], int player);
-int miniMax(int brd[], int player);
+//int minimax(int brd[], int player);
+//int aiMove(int brd[], int player);
 
 int main () {
     while(game_running){
@@ -43,13 +43,13 @@ int main () {
 
         if (next_player == -1){
             humanMove(board, next_move);
-            turn = turn + 1;
         }
 
         else if (next_player == 1){
             node = betterMove(board,next_move);
+            //node = aiMove(board, next_move);
+            //node = randomMove(board,next_move);
             makeMove(node, board, next_move);
-            turn = turn + 1;
         }
 
         int score = gameScore(board, next_move);
@@ -148,11 +148,11 @@ int checkScore(int brd[], int player) {
 
     for (int i = 0; i<8; i++){
         if(checkLine(i, brd)== (3 * player)){
-            score = 10;
+            score = 100;
         }
 
         else if(checkLine(i, brd)== (3 * switchPlayer(player))){
-            score = -10;
+            score = -100;
         }
 
         else if (boardFull(brd)){
@@ -210,6 +210,37 @@ int randomMove(int brd[], int player){
 int betterMove(int brd[], int player){
      int mv = -1;
 
+     //first move
+     int sum = 0;
+     int corners[4] = {0,2,6,8};
+
+     for (int n = 0; n<8; n++) {
+        sum = sum + brd[n];
+     }
+
+     //if the board is empty, take a corner
+     if (sum == 0){
+        srand (time(NULL));
+        int n = rand() % 4;
+        mv = corners[n];
+        return mv;
+     }
+
+     else if (sum == X || sum == O){
+        if (brd[4]==0){
+            mv = 4;
+            return mv;
+        }
+
+        else {
+            srand (time(NULL));
+            int n = rand() % 4;
+            mv = corners[n];
+            return mv;
+        }
+     }
+
+     //win move
      for (int n = 0; n<8; n++){
         int s = checkLine(n, brd);
         if (s == (2 * player)){
@@ -224,6 +255,7 @@ int betterMove(int brd[], int player){
         }
      }
 
+     //block move
      for (int n = 0; n<8; n++){
         int s = checkLine(n, brd);
         if (s == (2 * switchPlayer(player))){
@@ -238,12 +270,14 @@ int betterMove(int brd[], int player){
         }
      }
 
+     //fork move
      if(forkMove(brd,player)>-1){
         mv = forkMove(brd, player);
         cout<<"Best Move: "<<mv<<endl;
         return mv;
      }
 
+     //random move
      if (mv==-1){
         cout<<"Playing random!"<<endl;
         mv = randomMove(brd, player);
@@ -285,11 +319,57 @@ void humanMove(int brd[], int player){
     }
 }
 
-int miniMax(int brd[], int player) {
-    int mv = -1;
-    if 
-    
-    
-    return mv;
-    
+/*
+int aiMove(int brd[], int player){
+    int best_move = -1;
+    int score = -9000;
+
+    for (int m=0; m<9; m++){
+        if (brd[m]==0){
+            brd[m] = player;
+            int temp_score = minimax(brd, player);
+            brd[m] = 0; //reset board
+
+            if (temp_score > score){
+                score = temp_score;
+                best_move = m;
+                cout<<best_move<<"|"<<score;
+            }
+        }
+    }
+
+    cout<<"AI best move:"<<best_move<<endl;
+    return best_move;
 }
+
+int minimax(int brd[], int player){
+    int score = -9000;
+    int temp_score = checkScore(brd, player);
+
+    if (temp_score != -1){
+        score = temp_score;
+    }
+
+    for (int m=0; m<9; m++){
+        if (brd[m]==0){
+            brd[m] = player;
+        }
+    }
+
+    else {
+        for (int n=0; n<9; n++){
+            if (brd[n]==0){
+                brd[n]= player;
+                int other_player = switchPlayer(player);
+                int sc = - minimax(brd, other_player);
+
+                if (sc > score){
+                    score = sc;
+                }
+                brd[n]=0;
+            }
+        }
+    }
+    return score;
+}
+*/
