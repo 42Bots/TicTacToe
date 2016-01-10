@@ -29,8 +29,6 @@ int randomMove(int brd[], int player);
 int betterMove(int brd[], int player);
 int forkMove(int brd[], int player);
 void humanMove(int brd[], int player);
-//int minimax(int brd[], int player);
-//int aiMove(int brd[], int player);
 
 int main () {
     while(game_running){
@@ -318,58 +316,3 @@ void humanMove(int brd[], int player){
         done = makeMove(box, brd, player);
     }
 }
-
-/*
-int aiMove(int brd[], int player){
-    int best_move = -1;
-    int score = -9000;
-
-    for (int m=0; m<9; m++){
-        if (brd[m]==0){
-            brd[m] = player;
-            int temp_score = minimax(brd, player);
-            brd[m] = 0; //reset board
-
-            if (temp_score > score){
-                score = temp_score;
-                best_move = m;
-                cout<<best_move<<"|"<<score;
-            }
-        }
-    }
-
-    cout<<"AI best move:"<<best_move<<endl;
-    return best_move;
-}
-
-int minimax(int brd[], int player){
-    int score = -9000;
-    int temp_score = checkScore(brd, player);
-
-    if (temp_score != -1){
-        score = temp_score;
-    }
-
-    for (int m=0; m<9; m++){
-        if (brd[m]==0){
-            brd[m] = player;
-        }
-    }
-
-    else {
-        for (int n=0; n<9; n++){
-            if (brd[n]==0){
-                brd[n]= player;
-                int other_player = switchPlayer(player);
-                int sc = - minimax(brd, other_player);
-
-                if (sc > score){
-                    score = sc;
-                }
-                brd[n]=0;
-            }
-        }
-    }
-    return score;
-}
-*/
