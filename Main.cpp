@@ -387,7 +387,6 @@ int bestMove(int brd[], int player) {
         if (brd[i]==0){
             brd[i] = player;
             int s = miniMaxScore(brd, player, true, 0);
-            cout<<"Move: "<<i<<" S: "<<s<<endl;
             if (s > score){
                 mv = i;
                 score = s;
