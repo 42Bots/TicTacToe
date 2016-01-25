@@ -7,14 +7,14 @@
 using namespace std;
 
 // Variable declarations
-int next_move = 2; // "X" = 2; "O" = 5;
-int next_player = 1; // -1 = human, 1 = AI, 0 = no move;
+int next_move = 5; // "X" = 2; "O" = 5;
+int next_player = -1; // -1 = human, 1 = AI, 0 = no move;
 int board[9] = {0,0,0,0,0,0,0,0,0};
 const int board_size = 3;
 bool game_running = true;
 const int X = 2;
 const int O = 5;
-const int infinity = 999;
+const int inf = 999;
 const int win = 100;
 
 // Function declarations
@@ -168,7 +168,7 @@ int checkScore(int brd[], int player) {
 
 bool boardFull(int brd[]){
     bool full = true;
-    for (int m=0; m < (board_size * board_size); m++){
+    for (int m=0; m < 9; m++){
         if (brd[m]==0) {
             full = false;
             }
@@ -316,9 +316,10 @@ void humanMove(int brd[], int player){
     bool done = false;
 
     while (done == false){
-        cout<<"Your turn! Select an empty square."<<endl;
+        cout<<"Your turn! Select an empty square (1-9)."<<endl;
         int box;
         cin>>box;
+        box = box-1; // allow user input to be 1-9 rather than 0-8
         done = makeMove(box, brd, player);
     }
 }
@@ -327,28 +328,31 @@ int miniMaxScore(int brd[], int player, bool maxPlayer, int depth) {
 
     // if game over, return score
     int score = checkScore(brd, player);
-    if (score >=0){
+    if (score > 0){
         score = score-depth;
         return score;
     }
-    else if (score <=0 && score!=-1){
+    else if (score <0 && score!=-1){
         score = score+depth;
+        return score;
+    }
+    else if (score==0) {
         return score;
     }
 
     // if game not over, find the scores of each available move
     else {
-        int p = switchPlayer(player);
+        //int p = switchPlayer(player);
         bool m = !maxPlayer;
         int d = depth + 1;
 
         if (m) {
-            score = -infinity;
+            score = -inf;
 
             for (int i=0; i<9; i++){
                 if (brd[i]==0){
-                    brd[i] = p;
-                    int s = miniMaxScore(brd, p, m, d);
+                    brd[i] = player;
+                    int s = miniMaxScore(brd, player, m, d);
                     if (s > score){
                         score = s;
                     }
@@ -358,12 +362,12 @@ int miniMaxScore(int brd[], int player, bool maxPlayer, int depth) {
         }
 
         else {
-            score = infinity;
+            score = inf;
 
             for (int i=0; i<9; i++){
                 if (brd[i]==0){
-                    brd[i] = p;
-                    int s = miniMaxScore(brd, p, m, d);
+                    brd[i] = switchPlayer(player);
+                    int s = miniMaxScore(brd, player, m, d);
                     if (s < score) {
                         score = s;
                     }
@@ -376,14 +380,14 @@ int miniMaxScore(int brd[], int player, bool maxPlayer, int depth) {
 }
 
 int bestMove(int brd[], int player) {
-    int score = -infinity;
+    int score = -inf;
     int mv = -1;
 
    for (int i=0; i<9; i++){
         if (brd[i]==0){
             brd[i] = player;
             int s = miniMaxScore(brd, player, true, 0);
-            cout<<"Move: "<<i<<" Score: "<<s<<endl;
+            cout<<"Move: "<<i<<" S: "<<s<<endl;
             if (s > score){
                 mv = i;
                 score = s;
@@ -391,5 +395,6 @@ int bestMove(int brd[], int player) {
             brd[i] = 0;
         }
    }
+   cout<<"Best Move: "<<mv<<" Score: "<<score<<endl;
    return mv;
 }
