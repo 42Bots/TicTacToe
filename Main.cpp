@@ -14,6 +14,8 @@ const int board_size = 3;
 bool game_running = true;
 const int X = 2;
 const int O = 5;
+const int infinity = 999;
+const int win = 100;
 
 // Function declarations
 bool makeMove(int node, int brd[], int player);
@@ -29,6 +31,9 @@ int randomMove(int brd[], int player);
 int betterMove(int brd[], int player);
 int forkMove(int brd[], int player);
 void humanMove(int brd[], int player);
+int miniMaxScore(int brd[], int player, bool maxPlayer, int depth);
+int bestMove(int brd[], int player);
+
 
 int main () {
     while(game_running){
@@ -44,7 +49,8 @@ int main () {
         }
 
         else if (next_player == 1){
-            node = betterMove(board,next_move);
+            node = bestMove(board,next_move);
+            //node = betterMove(board,next_move);
             //node = aiMove(board, next_move);
             //node = randomMove(board,next_move);
             makeMove(node, board, next_move);
@@ -142,19 +148,19 @@ int switchPlayer(int player){
 }
 
 int checkScore(int brd[], int player) {
-    int score = -1;
+    int score = -1; // game still in progress
 
     for (int i = 0; i<8; i++){
         if(checkLine(i, brd)== (3 * player)){
-            score = 100;
+            score = win;
         }
 
         else if(checkLine(i, brd)== (3 * switchPlayer(player))){
-            score = -100;
+            score = -win; // loss is opposite of win
         }
 
         else if (boardFull(brd)){
-            score = 0;
+            score = 0; // draw
         }
     }
     return score;
@@ -315,4 +321,75 @@ void humanMove(int brd[], int player){
         cin>>box;
         done = makeMove(box, brd, player);
     }
+}
+
+int miniMaxScore(int brd[], int player, bool maxPlayer, int depth) {
+
+    // if game over, return score
+    int score = checkScore(brd, player);
+    if (score >=0){
+        score = score-depth;
+        return score;
+    }
+    else if (score <=0 && score!=-1){
+        score = score+depth;
+        return score;
+    }
+
+    // if game not over, find the scores of each available move
+    else {
+        int p = switchPlayer(player);
+        bool m = !maxPlayer;
+        int d = depth + 1;
+
+        if (m) {
+            score = -infinity;
+
+            for (int i=0; i<9; i++){
+                if (brd[i]==0){
+                    brd[i] = p;
+                    int s = miniMaxScore(brd, p, m, d);
+                    if (s > score){
+                        score = s;
+                    }
+                    brd[i] = 0;
+                }
+            }
+        }
+
+        else {
+            score = infinity;
+
+            for (int i=0; i<9; i++){
+                if (brd[i]==0){
+                    brd[i] = p;
+                    int s = miniMaxScore(brd, p, m, d);
+                    if (s < score) {
+                        score = s;
+                    }
+                    brd[i] = 0;
+                }
+            }
+        }
+    }
+    return score;
+}
+
+int bestMove(int brd[], int player) {
+    int score = -infinity;
+    int mv = -1;
+
+   for (int i=0; i<9; i++){
+        if (brd[i]==0){
+            brd[i] = player;
+            int s = miniMaxScore(brd, player, true, 0);
+            cout<<"Move: "<<i<<" Score: "<<s<<endl;
+            if (s > score){
+                mv = i;
+                score = s;
+            }
+            brd[i] = 0;
+        }
+   }
+   return mv;
 }
