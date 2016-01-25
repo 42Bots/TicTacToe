@@ -8,7 +8,7 @@ using namespace std;
 
 // Variable declarations
 int next_move = 5; // "X" = 2; "O" = 5;
-int next_player = -1; // -1 = human, 1 = AI, 0 = no move;
+int next_player = 1; // -1 = human, 1 = AI, 0 = no move;
 int board[9] = {0,0,0,0,0,0,0,0,0};
 const int board_size = 3;
 bool game_running = true;
@@ -390,6 +390,17 @@ int bestMove(int brd[], int player) {
             if (s > score){
                 mv = i;
                 score = s;
+            }
+
+            // Add some variety in the play.
+            // If two moves have the same score, the AI will randomly choose.
+            else if (s == score){
+                srand (time(NULL));
+                int n = rand() % 2;
+                if (n>0){
+                    mv = i;
+                }
+
             }
             brd[i] = 0;
         }
