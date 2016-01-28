@@ -26,7 +26,6 @@ void drawBoard(int brd[]);
 int switchPlayer(int player);
 int checkScore(int brd[], int player);
 bool boardFull(int brd[]);
-int gameScore(int brd[], int player);
 int randomMove(int brd[], int player);
 int betterMove(int brd[], int player);
 int forkMove(int brd[], int player);
@@ -56,7 +55,7 @@ int main () {
             makeMove(node, board, next_move);
         }
 
-        int score = gameScore(board, next_move);
+        int score = checkScore(board, next_move);
         next_player = -next_player;
 
         if (score!=-1){
